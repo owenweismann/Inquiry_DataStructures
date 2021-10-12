@@ -22,8 +22,7 @@ public class ExpressionEvaluator {
             } else {
                 if (op_stack.isEmpty())
                     op_stack.push(sub_str);
-                else
-                    top_op = op_stack.peek();
+                top_op = op_stack.peek();
 
                 if (sub_str.equals("^")) {
                     op_stack.push("^");
@@ -41,7 +40,7 @@ public class ExpressionEvaluator {
                         }
                     }
                 } else if (sub_str.equals("+") || top_op.equals("-")) {
-                    if (top_op.equals("*") || top_op.equals("/")) {
+                    if (top_op.equals("*") || top_op.equals("/") || top_op.equals("^")) {
                         int num;
                         int num2;
                         switch(top_op) {
@@ -53,6 +52,10 @@ public class ExpressionEvaluator {
                                 num = num_stack.pop();
                                 num2 = num_stack.pop();
                                 num_stack.push(num2/num);
+                            case "^":
+                                num = num_stack.pop();
+                                num2 = num_stack.pop();
+                                num_stack.push((int)Math.pow(num2,num));
                         }
                     } else {
                         switch(sub_str) {
