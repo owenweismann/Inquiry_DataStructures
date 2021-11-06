@@ -43,22 +43,29 @@ public class SingleLinkedList implements LinkedList_ListInterface {
      * @param element
      */
     public void add(int index, Object element) {
-        Node ptr = new Node(element);
         if (index > numElements) {
             throw new IndexOutOfBoundsException("This index does not exist");
         } else if (index == 0) {
-            Node newNode = front;
-            front = ptr;
-            ptr.setNext(newNode);
+            if (front != null) {
+                Node next = front;
+                front.setNext(next);
+                front.setValue(element);
+            } else {
+                front = new Node();
+                front.setValue(element);
+            }
             numElements++;
         } else {
-            Node prev = nodeBeforeIndex(index-1);
+            Node prev = nodeBeforeIndex(index);
             if (index == numElements) {
-                prev.setNext(ptr);
+                Node end = new Node();
+                end.setValue(element);
+                prev.setNext(end);
             } else {
-                Node next = prev.getNext();
-                prev.setNext(ptr);
-                ptr.setNext(next);
+                Node n = new Node();
+                n.setValue(element);
+                n.setNext(prev.getNext());
+                prev.setNext(n);
             }
             numElements++;
         }
@@ -87,9 +94,7 @@ public class SingleLinkedList implements LinkedList_ListInterface {
         }
         if (ptr.getValue().equals(element)) {
             return true;
-        } else {
-            return false;
-        }
+        } else return false;
     }
     public Object get(int index) {
         if (numElements == 0) {
@@ -97,9 +102,7 @@ public class SingleLinkedList implements LinkedList_ListInterface {
         } else if (numElements == 1) {
             if (index == 0) {
                 return front.getValue();
-            } else {
-                throw new IndexOutOfBoundsException("The called index does not exist in this LinkedList");
-            }
+            } else throw new IndexOutOfBoundsException("The called index does not exist in this LinkedList");
         } else {
             int counter = 0;
             Node ptr = front;
@@ -113,9 +116,7 @@ public class SingleLinkedList implements LinkedList_ListInterface {
             }
             if (counter == index) {
                 return ptr.getValue();
-            } else {
-                throw new IndexOutOfBoundsException("The called index does not exist in this LinkedList");
-            }
+            } else throw new IndexOutOfBoundsException("The called index does not exist in this LinkedList");
         }
     }
     public int indexOf(Object element) {
@@ -124,9 +125,7 @@ public class SingleLinkedList implements LinkedList_ListInterface {
         } else if (numElements == 1) {
             if (front.getValue().equals(element)) {
                 return 0;
-            } else {
-                return -1;
-            }
+            } else return -1;
         } else {
             int counter = 0;
             Node ptr = front;
@@ -140,9 +139,7 @@ public class SingleLinkedList implements LinkedList_ListInterface {
             }
             if (ptr.getValue().equals(element)) {
                 return counter;
-            } else {
-                return -1;
-            }
+            } else return -1;
         }
     }
     public int lastIndexOf(Object element) {
@@ -151,9 +148,7 @@ public class SingleLinkedList implements LinkedList_ListInterface {
         } else if (numElements == 1) {
             if (front.getValue().equals(element)) {
                 return 0;
-            } else {
-                return -1;
-            }
+            } else return -1;
         } else {
             int counter = 0;
             int return_value = counter;
@@ -178,9 +173,7 @@ public class SingleLinkedList implements LinkedList_ListInterface {
         if (foundIndex != -1) {
             remove(foundIndex);
             return true;
-        } else {
-            return false;
-        }
+        } else return false;
     }
     public Object remove(int index) {
         Object return_value = null;
@@ -191,26 +184,28 @@ public class SingleLinkedList implements LinkedList_ListInterface {
             return_value = front.getValue();
             front = front.getNext();
             numElements--;
+            return return_value;
          } else {  // fact at least one node, index > 0
-            Node prev = nodeBeforeIndex(index-1);
-            Node ptr = front;
+            Node prev = nodeBeforeIndex(index);
+            Node ptr = prev.getNext();
             if (ptr.getNext() == null) {
                 prev.setNext(null);
                 numElements--;
-                return_value = ptr.getValue();
+                return ptr.getValue();
+            } else {
+                Node next = nodeBeforeIndex(index+1);
+                return_value = next.getValue();
+                prev.setNext(next.getNext());
+                numElements--;
             }
-            Node next = nodeBeforeIndex(index + 1);
-            prev.setNext(next);
-            numElements--;
-            return_value = ptr.getValue();
+            return return_value;
          }
-        return return_value;
     }
     public Object set(int index, Object element) {
         if (index > numElements-1) {
             throw new IndexOutOfBoundsException("This index does not exist");
         }
-        Node ptr = nodeBeforeIndex(index);
+        Node ptr = nodeBeforeIndex(index+1);
         Object removed = ptr.getValue();
         ptr.setValue(element);
         return removed;
